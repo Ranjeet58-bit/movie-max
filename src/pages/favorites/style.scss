@@ -1,0 +1,20 @@
+@import "../../mixin.scss";
+.favoritesPage{
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+  
+    width: 100%;
+    h1{
+        font-size: 20px;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+    .movieGrid{
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        .movieCard{
+            width: 100%;
+        }
+    }
+}
