@@ -2,8 +2,12 @@
 .favoritesPage{
     padding-top: 5rem;
     padding-bottom: 2rem;
-  
     width: 100%;
+    .notList_found{
+        color: #fff;
+        text-align: center;
+        font-size: 18px;
+    }
     h1{
         font-size: 18px;
         color: #fff;

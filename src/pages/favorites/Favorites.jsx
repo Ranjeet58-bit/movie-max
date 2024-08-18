@@ -102,7 +102,7 @@ const Favorites = React.memo(function Favorites() {
                         ))}
                     </div>
                 ) : (
-                    <p>No favorite movies found.</p>
+                    <p className="notList_found">No favorite movies found.</p>
                 )}
             </div>
         </ContentWrapper>

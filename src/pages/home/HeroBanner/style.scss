@@ -166,6 +166,10 @@
           object-fit: cover;
           object-position: center;
         }
+        .carouselContent{
+          max-width: 100% !important;
+          padding-right: 20px !important;
+        }
       }
 
       .carouselControls {
