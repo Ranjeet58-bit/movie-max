@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useParams } from "react-router-dom";
-import Select from "react-select";
 import "./style.scss";
 import useFetch from "../../hooks/useFetch";
 import { fetchDataFromApi } from "../../utils/api";
@@ -8,24 +7,26 @@ import ContentWrapper from "../../components/contentWrapper/ContentWrapper";
 import MovieCard from "../../components/movieCard/MovieCard";
 import Spinner from "../../components/spinner/Spinner";
 import CustomInfiniteScroll from "../../components/CustomInfiniteScroll/CustomInfiniteScroll";
-import CustomModal from "../../components/CustomModal/CustomModal"; 
 import { IoFilter } from "react-icons/io5";
-import InfiniteScroll from "react-infinite-scroll-component";
+
+
+const CustomModalLazy = React.lazy(() => import("../../components/CustomModal/CustomModal")); 
 
 let filters = {};
 
 const Explore = () => {
+    const { mediaType } = useParams();
     const [data, setData] = useState(null);
     const [pageNum, setPageNum] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedFilters, setSelectedFilters] = useState({});
     const [showModal, setShowModal] = useState(false);
-    const { mediaType } = useParams();
 
     const { data: genresData } = useFetch(`/genre/${mediaType}/list`);
 
-    const fetchInitialData = async () => {
+    // Fetch initial data
+    const fetchInitialData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -37,17 +38,17 @@ const Explore = () => {
         } finally {
             setLoading(false);
         }
-    };
-    
+    }, [mediaType]);
 
-    const fetchNextPageData = async () => {
+    // Fetch next page data
+    const fetchNextPageData = useCallback(async () => {
         try {
             const res = await fetchDataFromApi(`/discover/${mediaType}?page=${pageNum}`, filters);
             if (data?.results) {
-                setData({
-                    ...data,
-                    results: [...data?.results, ...res.results],
-                });
+                setData((prevData) => ({
+                    ...prevData,
+                    results: [...prevData.results, ...res.results],
+                }));
             } else {
                 setData(res);
             }
@@ -55,9 +56,10 @@ const Explore = () => {
         } catch (err) {
             setError("Failed to load more data. Please try again later.");
         }
-    };
+    }, [pageNum, data, mediaType]);
 
-    const handleApplyFilters = (appliedFilters) => {
+    // Handle filter application
+    const handleApplyFilters = useCallback((appliedFilters) => {
         const newFilters = { ...filters };
         const displayFilters = { ...selectedFilters };
 
@@ -65,18 +67,8 @@ const Explore = () => {
             const selectedGenreIds = appliedFilters.genres.map((g) => g.id);
             const selectedGenreNames = appliedFilters.genres.map((g) => g.name);
 
-            if (filters.with_genres) {
-                const existingGenreIds = filters.with_genres.split(',').map(Number);
-                newFilters.with_genres = [...new Set([...existingGenreIds, ...selectedGenreIds])].join(',');
-            } else {
-                newFilters.with_genres = selectedGenreIds.join(',');
-            }
-
-            if (displayFilters.genres) {
-                displayFilters.genres = [...new Set([...displayFilters.genres, ...selectedGenreNames])];
-            } else {
-                displayFilters.genres = selectedGenreNames;
-            }
+            newFilters.with_genres = selectedGenreIds.join(',');
+            displayFilters.genres = selectedGenreNames;
         }
 
         if (appliedFilters.releaseYearRange.from) {
@@ -102,17 +94,19 @@ const Explore = () => {
         filters = newFilters;
         setSelectedFilters(displayFilters);
         fetchInitialData();
-    };
+    }, [fetchInitialData, selectedFilters]);
 
+    // Reset filters and fetch data on mediaType change
     useEffect(() => {
         filters = {};
         setData(null);
         setPageNum(1);
         setSelectedFilters({});
         fetchInitialData();
-    }, [mediaType]);
+    }, [mediaType, fetchInitialData]);
 
-    const handleRemoveFilter = (filterKey, filterValue) => {
+    // Handle filter removal
+    const handleRemoveFilter = useCallback((filterKey, filterValue) => {
         if (filterKey === "genres") {
             const genreIds = filters.with_genres.split(',').map(Number);
             const selectedGenreIds = genresData?.genres
@@ -138,7 +132,30 @@ const Explore = () => {
         });
 
         fetchInitialData();
-    };
+    }, [genresData, fetchInitialData]);
+
+    // Memoized selected filters
+    const memoizedSelectedFilters = useMemo(() => {
+        return Object.keys(selectedFilters).map((key) => {
+            if (key === "genres") {
+                return selectedFilters[key].map((genreName, index) => (
+                    <div className="filterItem" key={index}>
+                        <span>Genre: {genreName}</span>
+                        <span className="removeFilter" onClick={() => handleRemoveFilter(key, [genreName])}>×</span>
+                    </div>
+                ));
+            }
+            return (
+                <div className="filterItem" key={key}>
+                    <span>
+                        {key === "releaseYearRange" && `Releasing Year: ${selectedFilters[key]}`}
+                        {key === "ratingRange" && `Rating: ${selectedFilters[key]}`}
+                    </span>
+                    <span className="removeFilter" onClick={() => handleRemoveFilter(key, selectedFilters[key])}>×</span>
+                </div>
+            );
+        });
+    }, [selectedFilters, handleRemoveFilter]);
 
     return (
         <div className="explorePage">
@@ -152,25 +169,7 @@ const Explore = () => {
                     </button>
                 </div>
                 <div className="selectedFilters">
-                    {Object.keys(selectedFilters).map((key) => {
-                        if (key === "genres") {
-                            return selectedFilters[key].map((genreName, index) => (
-                                <div className="filterItem" key={index}>
-                                    <span>Genre: {genreName}</span>
-                                    <span className="removeFilter" onClick={() => handleRemoveFilter(key, [genreName])}>×</span>
-                                </div>
-                            ));
-                        }
-                        return (
-                            <div className="filterItem" key={key}>
-                                <span>
-                                    {key === "releaseYearRange" && `Releasing Year: ${selectedFilters[key]}`}
-                                    {key === "ratingRange" && `Rating: ${selectedFilters[key]}`}
-                                </span>
-                                <span className="removeFilter" onClick={() => handleRemoveFilter(key, selectedFilters[key])}>×</span>
-                            </div>
-                        );
-                    })}
+                    {memoizedSelectedFilters}
                 </div>
                 {loading && <Spinner initial={true} />}
                 {error && <div className="error">{error}</div>}
@@ -199,12 +198,14 @@ const Explore = () => {
             </ContentWrapper>
 
             {/* Custom Modal for Filters */}
-            <CustomModal
-                show={showModal}
-                handleClose={() => setShowModal(false)}
-                onApplyFilters={handleApplyFilters}
-                genresData={genresData}
-            />
+            <Suspense fallback={<Spinner />}>
+                <CustomModalLazy
+                    show={showModal}
+                    handleClose={() => setShowModal(false)}
+                    onApplyFilters={handleApplyFilters}
+                    genresData={genresData}
+                />
+            </Suspense>
         </div>
     );
 };

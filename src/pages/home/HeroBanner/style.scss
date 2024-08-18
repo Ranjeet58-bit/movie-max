@@ -1,120 +1,183 @@
-@import "../../../mixin.scss";
-
 .heroBanner {
   width: 100%;
-  height: 450px;
   display: flex;
   align-items: center;
   background-color: var(--black);
   position: relative;
-  @include md {
-    height: 700px;
-  }
-  .backdrop__img {
+  overflow: hidden;
+
+  .carouselWrapper {
+    position: relative;
     width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0.5;
+    height: 100vh;
     overflow: hidden;
-    .lazy-load-image-background {
+
+    &:hover .carouselControls {
+      opacity: 1;
+    }
+
+    .carouselControls {
+      position: absolute;
+      top: 45%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.5s ease-in-out;
+      opacity: 0;
+
+      button {
+        margin: 0 80px;
+        border: 1px solid rgba(255, 255, 255, 0.44);
+        border-radius: 150px;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 0;
+        display: inline-block;
+
+        svg {
+          color: #eeeded;
+          transition: transform 0.2s;
+          width: 28px;
+          height: 28px;
+        }
+      }
+    }
+
+    .carouselInner {
+      display: flex;
       width: 100%;
       height: 100%;
-      img {
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+      opacity: 1;
+
+      &.fadeOutRight {
+        opacity: 0;
+        transform: translateX(20%);
+      }
+    }
+
+    .carouselSlide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+
+      .backdrop__img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: center;
-      }
-    }
-  }
-  .opacityLayer {
-    width: 100%;
-    height: 250px;
-    background: linear-gradient(180deg, rgba(4, 21, 45, 0) 0%, #1a1625 79.17%);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-  }
-  .heroBanner__Content{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #ffffff;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    max-width: 800px;
-    margin: 0 auto;
-    .title{
-        font-size: 50px;
-        font-weight: 700;
-        margin-bottom:45px;
-        @include md{
-            font-size: 90px;
-        }
-    }
-    .subTitle{
-        font-size: 18px;
-        font-weight: 500;
-        margin-bottom: 40px;
-        @include md{
-            font-size: 24px;
 
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
-    }
-    .searchInput{
-        display: flex;
-        align-items: center;
+      }
+
+      .opacityLayer {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        input{
-            width: calc(100% - 100px);
-            height: 50px;
-            background-color: #ffffff;
-            outline: 0;
-            border:0;
-            border-radius: 30px 0 0 30px;
-            padding: 0px 15px;
-            font-size: 14px;
-            @include md{
-                width: calc(100% - 150px);
-                height: 60px;
-                font-size: 20px;
-                padding: 0px 30px;
-            }
+        height: 100%;
+        z-index: 1;
+        background: linear-gradient(180deg, rgba(4, 21, 45, 0) 0%, #1a1625 79.17%);
+      }
+
+      .carouselContent {
+        position: absolute;
+        bottom: 60px;
+        left: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        max-width: 500px;
+        z-index: 2;
+
+        .title {
+          font-size: 1.6rem;
+          font-weight: 600;
+          line-height: 2rem;
+          margin-bottom: 10px;
         }
-        button{
-            width: 100px; 
-            height: 50px;
-            background: var(--gradient);
-            color: #ffffff;
-            outline: 0;
-            border:0;
-            border-radius: 0 30px 30px 0px;
-            font-size: 16px;
-            cursor: pointer;
-            @include md{
-                width: 150px;
-                height: 60px;
-                font-size: 18px;
-            }
+
+        .rating,
+        .description {
+          font-size: 1rem;
+          opacity: 0.6;
         }
+
+        .rating {
+          margin: 15px 0;
+        }
+
+        .description {
+          font-size: 0.95rem;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .heroGneres {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 30px;
+          background: linear-gradient(98.37deg, #f89e00 0.99%, #da2f68 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+
+          .language {
+            padding-right: 10px;
+            border-right: 1px solid #f89e00;
+          }
+
+          p {
+            font-size: 0.9rem;
+          }
+        }
+
+        .playButton {
+          background: var(--gradient);
+          border: none;
+          padding: 14px 20px;
+          font-size: 1.2rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          color: white;
+          cursor: pointer;
+          gap: 15px;
+          width: max-content;
+          border-radius: 8px;
+        }
+      }
     }
   }
-}
 
-@media screen and (max-width:767px){
-  .homePage{
-    .heroBanner{
-      .title{
-        font-size: 35px;
-        margin-bottom: 10px;
+  @media screen and (max-width: 767px) {
+    .carouselWrapper {
+      .carouselSlide {
+        .backdrop__img img {
+          height: 100vh;
+          object-fit: cover;
+          object-position: center;
+        }
       }
-      .subTitle{
-        font-size: 16px;
+
+      .carouselControls {
+        button {
+          margin: 0 15px;
+
+          svg {
+            width: 22px;
+            height: 22px;
+          }
+        }
       }
     }
-   
   }
 }

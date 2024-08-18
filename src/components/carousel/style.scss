@@ -24,9 +24,17 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 10;
+      background: #ffffff;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #f89e00b3;
+      filter: drop-shadow(0 0 0.7rem #f89e00b3);
       svg {
-        color: #fff;
-        filter: drop-shadow(0 0 0.75rem crimson);
+        color: #f89e00;
       }
     }
     &:hover {
@@ -118,13 +126,24 @@
       width: 125px;
       cursor: pointer;
       flex-shrink: 0;
+      margin: 5px 0px;
       @include md {
         width: calc(25% - 15px);
       }
       @include lg {
         width: calc(20% - 16px);
       }
-
+      &:focus {
+        outline: 2px solid #fff;
+        outline-offset: 4px;
+        transition: outline-offset 0.3s ease;
+        border-radius: 12px;
+      }
+      &:hover .favoriteIcon,
+      &:focus-within .favoriteIcon {
+        opacity: 1;
+        visibility: visible;
+      }
       .posterBlock {
         position: relative;
         width: 100%;
@@ -184,6 +203,12 @@
           @include ellipsis(1);
           @include md {
             font-size: 20px;
+          }
+          &:focus {
+            outline: 2px solid #fff;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            border-radius: 4px;
+            padding: 0px 2px;
           }
         }
         .date {

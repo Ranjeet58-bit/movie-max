@@ -86,15 +86,25 @@ const Header = () => {
       role="banner"
     >
       <ContentWrapper>
-        <div className="logo" onClick={() => navigate("/")} aria-label="Go to home">
+        <div
+          className="logo"
+          onClick={() => navigate("/")}
+          aria-label="Go to home"
+          role="button"
+          tabIndex={0} // Make the logo focusable
+          onKeyDown={(e) => e.key === "Enter" && navigate("/")}
+        >
           <img src={logo} alt="Movie Logo" />
         </div>
-        <nav className="headerLeft" aria-label="Primary">
+        <nav className="headerLeft" aria-label="Primary navigation">
           <ul className="menuItems">
             <li
               className="menuItem"
               onClick={() => navigationHandler("movie")}
               aria-label="Navigate to Movies"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && navigationHandler("movie")}
             >
               Movies
             </li>
@@ -102,23 +112,28 @@ const Header = () => {
               className="menuItem"
               onClick={() => navigationHandler("tv")}
               aria-label="Navigate to TV Shows"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && navigationHandler("tv")}
             >
               TV Shows
             </li>
             <li className="menuItem">
-              <Link to="/favorites" aria-label="Go to Favorites Page">
+              <Link
+                to="/favorites"
+                aria-label="Go to Favorites Page"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && navigate("/favorites")}
+              >
                 Favorites
               </Link>
             </li>
           </ul>
           <div className="searchInput">
-            {/* <label htmlFor="search" className="sr-only">
-              Search for a movie or TV show
-            </label> */}
             <input
               id="search"
               type="text"
-              placeholder="Search for a movie or TV..."
+              placeholder="Search here...."
               value={query}
               onChange={handleInputChange}
               onKeyUp={(e) =>
@@ -126,7 +141,8 @@ const Header = () => {
                 query.length > 0 &&
                 navigate(`/search/${query}`)
               }
-              aria-label="Search for a movie or TV show"
+              aria-label="Search for movies or TV shows"
+              aria-describedby="search-helper-text"
             />
             <button onClick={openSearch} aria-label="Open search">
               <HiOutlineSearch />
@@ -134,11 +150,17 @@ const Header = () => {
           </div>
           <div className="mobileMenuItems">
             {mobileMenu ? (
-              <button onClick={() => setMobileMenu(false)} aria-label="Close mobile menu">
+              <button
+                onClick={() => setMobileMenu(false)}
+                aria-label="Close mobile menu"
+              >
                 <VscChromeClose />
               </button>
             ) : (
-              <button onClick={openMobileMenu} aria-label="Open mobile menu">
+              <button
+                onClick={openMobileMenu}
+                aria-label="Open mobile menu"
+              >
                 <SlMenu />
               </button>
             )}

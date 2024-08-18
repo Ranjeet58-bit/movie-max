@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 :root {
-  font-family: 'Inter', sans-serif;
+font-family: "Rubik", sans-serif;
   font-size: 16px;
   line-height: 1;
   font-weight: 400;
@@ -25,17 +25,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: "Rubik", sans-serif;
 }
 div,span,h1,h2,h3,h4,h5,h6,p{
-  font-family: 'Inter', sans-serif;
+  font-family: "Rubik", sans-serif;
   line-height: 1.2rem;
 }
 body {
   background-color: var(--black);
 }
-
-
 
 button{
   background-color: transparent;

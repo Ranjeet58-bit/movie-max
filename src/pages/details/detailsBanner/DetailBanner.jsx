@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
@@ -13,36 +13,50 @@ import PosterFallback from "../../../assets/no-poster.png";
 import { PlayIcon } from "../PlayBtn";
 import VideoPopup from "../../../components/videoPopup/VideoPopup";
 
-const DetailBanner = ({ video, crew }) => {
+const DetailBanner = React.memo(({ video, crew }) => {
   const [show, setShow] = useState(false);
   const [videoId, setVideoId] = useState(null);
-
   const { mediaType, id } = useParams();
   const { data, loading } = useFetch(`/${mediaType}/${id}`);
-
-  const { url } = useSelector((state) => state.home);
-
-  const _genres = data?.genres?.map((g) => g.id);
-
-  const director = crew?.filter((f) => f.job === "Director");
-  const writer = crew?.filter(
-    (f) => f.job === "Screenplay" || f.job === "Story" || f.job === "Writer"
+  const { url = {} } = useSelector((state) => state.home);
+  const _genres = useMemo(
+    () => data?.genres?.map((g) => g.id) || [],
+    [data?.genres]
+  );
+  const director = useMemo(
+    () => crew?.filter((f) => f.job === "Director") || [],
+    [crew]
+  );
+  const writer = useMemo(
+    () =>
+      crew?.filter(
+        (f) => f.job === "Screenplay" || f.job === "Story" || f.job === "Writer"
+      ) || [],
+    [crew]
   );
 
-  const toHoursAndMinutes = (totalMinutes) => {
+  const toHoursAndMinutes = useCallback((totalMinutes) => {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`;
-  };
+  }, []);
 
   return (
     <div className="detailsBanner">
       {!loading ? (
         <>
-          {!!data && (
-            <React.Fragment>
+          {data ? (
+            <>
               <div className="backdrop-img">
-                <Img src={url.backdrop + data.backdrop_path} />
+                <Img
+                  src={
+                    url.backdrop
+                      ? url.backdrop + data.backdrop_path
+                      : PosterFallback
+                  }
+                  alt="Backdrop"
+                  loading="lazy"
+                />
               </div>
               <div className="opacity-layer"></div>
               <ContentWrapper>
@@ -51,10 +65,21 @@ const DetailBanner = ({ video, crew }) => {
                     {data.poster_path ? (
                       <Img
                         className="posterImg"
-                        src={url.backdrop + data.poster_path}
+                        src={
+                          url.backdrop
+                            ? url.backdrop + data.poster_path
+                            : PosterFallback
+                        }
+                        alt={data.title || "Poster"}
+                        loading="lazy"
                       />
                     ) : (
-                      <Img className="posterImg" src={PosterFallback} />
+                      <Img
+                        className="posterImg"
+                        src={PosterFallback}
+                        alt="Poster"
+                        loading="lazy"
+                      />
                     )}
                   </div>
                   <div className="right">
@@ -66,7 +91,9 @@ const DetailBanner = ({ video, crew }) => {
                     <div className="subtitle">{data.tagline}</div>
                     <Genres data={_genres} />
                     <div className="row">
-                      <CircleRating rating={data.vote_average.toFixed(1)} />
+                      <CircleRating
+                        rating={data.vote_average?.toFixed(1) || "N/A"}
+                      />
                       <div
                         className="playbtn"
                         onClick={() => {
@@ -106,11 +133,11 @@ const DetailBanner = ({ video, crew }) => {
                         </div>
                       )}
                     </div>
-                    {director?.length > 0 && (
+                    {director.length > 0 && (
                       <div className="info">
                         <span className="text bold">Director: </span>
                         <span className="text">
-                          {director?.map((d, i) => (
+                          {director.map((d, i) => (
                             <span key={i}>
                               {d.name}
                               {director.length - 1 !== i && ", "}
@@ -120,11 +147,11 @@ const DetailBanner = ({ video, crew }) => {
                       </div>
                     )}
 
-                    {writer?.length > 0 && (
+                    {writer.length > 0 && (
                       <div className="info">
                         <span className="text bold">Writer: </span>
                         <span className="text">
-                          {writer?.map((d, i) => (
+                          {writer.map((d, i) => (
                             <span key={i}>
                               {d.name}
                               {writer.length - 1 !== i && ", "}
@@ -134,14 +161,14 @@ const DetailBanner = ({ video, crew }) => {
                       </div>
                     )}
 
-                    {data?.created_by?.length > 0 && (
+                    {data.created_by?.length > 0 && (
                       <div className="info">
                         <span className="text bold">Creator: </span>
                         <span className="text">
-                          {data?.created_by?.map((d, i) => (
+                          {data.created_by.map((d, i) => (
                             <span key={i}>
                               {d.name}
-                              {data?.created_by.length - 1 !== i && ", "}
+                              {data.created_by.length - 1 !== i && ", "}
                             </span>
                           ))}
                         </span>
@@ -156,7 +183,9 @@ const DetailBanner = ({ video, crew }) => {
                   setVideoId={setVideoId}
                 />
               </ContentWrapper>
-            </React.Fragment>
+            </>
+          ) : (
+            <div>No data available</div>
           )}
         </>
       ) : (
@@ -177,6 +206,8 @@ const DetailBanner = ({ video, crew }) => {
       )}
     </div>
   );
-};
+});
+
+DetailBanner.displayName = "DetailBanner";
 
 export default DetailBanner;

@@ -7,7 +7,7 @@ const Img = ({src, className}) => {
   return (
     <LazyLoadImage
             className={className || ""}
-            alt="poster-image"
+            alt=" "
             effect="blur"
             src={src}
         />

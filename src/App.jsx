@@ -12,6 +12,8 @@ import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Favorites from "./pages/favorites/Favorites";
 
+
+
 function App() {
   const dispatch = useDispatch();
   const { url } = useSelector((state) => state.home);

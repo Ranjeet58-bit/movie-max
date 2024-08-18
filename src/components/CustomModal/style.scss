@@ -69,6 +69,7 @@
     border: 1px solid #46424f;
     border-radius: 8px;
     background-color: #46424f;
+    color: #fff;
   }
   
   .custom-select-container {
@@ -118,5 +119,21 @@
   }
   }
   
+
+  @media screen and (max-width:767px){
+    .custom-modal-content{
+      max-width: 95%;
+    }
+  }
    
+  input::placeholder{
+    color: #fff;
+  }
+
+  select{
+    color: #fff;
+  }
+  select option{
+    color: #fff;
+  }
   

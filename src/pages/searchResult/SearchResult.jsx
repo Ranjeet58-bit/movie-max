@@ -16,14 +16,15 @@ const SearchResult = () => {
   const [error, setError] = useState(null);
   const { query } = useParams();
 
+
   const fetchInitialData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetchDataFromApi(`/search/multi?query=${query}&page=1`);
       setData(res.results || []);
-      setPageNum(2); // Start from the second page for infinite scroll
-      setHasMore(res.total_pages > 1); // Determine if more pages are available
+      setPageNum(2); 
+      setHasMore(res.total_pages > 1); 
     } catch (err) {
       setError("Something went wrong. Please try again later.");
     } finally {
